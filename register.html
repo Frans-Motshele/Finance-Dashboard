@@ -9,22 +9,25 @@
     <body>
         <main>
             <div class="register">
-                <h2>Personal Information</h2>
+                <h2>Finance Tracker</h2>
+                <h3>Personal Information</h3>
                 <form>
                     <label for="fname">First Name:</label>
                     <input id="fname" type="text" placeholder="Frans" required>
                     <label for="lname">Last Name:</label>
                     <input id="lname" type="text" placeholder="Motshele" required>
                     <label for="email">Email Address:</label>
-                    <input id="email" type="email" placeholder="fransmotshele@gmail.com" required pattern=".@gmail.com">
+                    <input id="email" type="email" placeholder="fransmotshele@gmail.com" required pattern=".+@gmail\.com">
                     <label for="phoneNo">Phone Number:</label>
                     <input id="phoneNo" type="tel" placeholder="123-456-7890" required>
                     <label for="dob">Date of Birth:</label>
                     <input id="dob" type="date" required>
-                    <button type="submit">Continue</button>
+                    <button type="submit" id="continuebtn">Continue</button>
                 </form>
             </div>
         </main>
+
+        <script src="script.js"></script>
     </body>
 
 </html>
