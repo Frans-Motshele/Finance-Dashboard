@@ -1,25 +1,43 @@
 //buttons
-const registerbtn=document.getElementById("rgbtn")
+const registerbtn = document.getElementById("rgbtn")
 const continuebtn = document.getElementById("continuebtn")
 const backbtn = document.getElementById("backbtn")
 const createAccbtn = document.getElementById("createAccbtn")
-    
+const loginbtn = document.getElementById("loginbtn")
+
 //moving between pages with buttons
-registerbtn.addEventListener("click",()=>{
-    window.location.href="register.html"
-})
+if (registerbtn) {
+    registerbtn.addEventListener("click", () => {
+        window.location.href = "register.html"
+    })
+}
 
-continuebtn.addEventListener("click",()=>{
-    window.location.href="accountsetup.html"
-})
+if (continuebtn) {
+    continuebtn.addEventListener("click", (event) => {
+        event.preventDefault()
+        window.location.href = "Accountsetup.html"
+    })
+}
 
-backbtn.addEventListener("click",()=>{
-    window.location.href="register.html"
-})
+if (backbtn) {
+    backbtn.addEventListener("click", () => {
+        window.location.href = "register.html"
+    })
+}
 
-createAccbtn.addEventListener("click",()=>{
-    window.location.href="index.html"
-})
+if (createAccbtn) {
+    createAccbtn.addEventListener("click", (event) => {
+        event.preventDefault()
+        window.location.href = "Index.html"
+    })
+}
+
+if(loginbtn){
+    loginbtn.addEventListener("click",(event)=>{
+        event.preventDefault
+        window.location.href=""
+    })
+}
 
 
 

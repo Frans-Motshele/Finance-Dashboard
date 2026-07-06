@@ -17,11 +17,29 @@
                     <input id="password" type="password" placeholder="Password" required>
                     <label for="confirm-password">Confirm Password:</label>
                     <input id="confirm-password" type="password" placeholder="Confirm Password" required>
-                    <button type="submit" id="back">Back</button>
-                    <button type="submit" id="createAcc">Create Account</button>
+                    <label for="currency">Preffered Currency</label>
+                    <select id="currency">
+                        <option>ZAR - South African Rand (R)</option>
+                        <option>USD - US Dollar</option>
+                        <option>EUR - Euro</option>
+                        <option>GBP - British Pound</option>
+                    </select>
+
+                    <label for="income-range">Monthly Income range</label>
+                    <select id="income-range">
+                        <option value="">Prefer not to say</option>
+                        <option value="">R0 - R4000</option>
+                        <option value="">R4000 - R10000 </option>
+                        <option value="">R10000 - R30000</option>
+                        <option value="">R30000 - R50000</option>
+                        <option value="">R50000+</option>
+                    </select>
+                    <button type="button" id="backbtn">Back</button>
+                    <button type="submit" id="createAccbtn">Create Account</button>
                 </form>
             </div>
         </main>
 
         <script src="script.js"></script>
     </body>
+    </html>

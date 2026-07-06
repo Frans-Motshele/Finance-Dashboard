@@ -17,15 +17,7 @@ h1{
     margin-bottom: 20px;
 }
 
-.login{
-    width: 400px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.register{
+.login, .register, .account-setup{
     width: 400px;
     padding: 20px;
     border: 1px solid #ccc;
@@ -34,7 +26,7 @@ h1{
 }
 
 
-.login h2, .register h2{
+.login h2, .register h2, .account-setup h2{
     margin-bottom: 20px;
     text-align: center;
 }
@@ -44,7 +36,7 @@ h1{
     
 }
 
-.login input, .register input, .account-setup input{
+.login input, .register input, .account-setup input, .account-setup select{
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -90,4 +82,7 @@ h1{
     background-color: #0056b3;
     outline: none;
 }
+
+
+
 
