@@ -83,6 +83,14 @@ h1{
     outline: none;
 }
 
+/*dashboard page*/
+.dashboard{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width:200px;
+    background-color: grey;
+}
 
 
 
