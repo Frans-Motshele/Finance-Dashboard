@@ -1,96 +1,210 @@
-*{
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
 }
 
-body{
+body {
+    min-height: 100vh;
+    background: #f4f6f8;
+    color: #18202a;
+}
+
+body:not([data-page="dashboard"]) {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    
 }
-h1{
+
+main {
+    width: 100%;
+}
+
+h1 {
     text-align: center;
     margin-bottom: 20px;
 }
 
-.login, .register, .account-setup{
-    width: 400px;
+.login,
+.register,
+.account-setup {
+    width: min(400px, calc(100vw - 32px));
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid #d8dde3;
     border-radius: 5px;
+    background: #ffffff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-
-.login h2, .register h2, .account-setup h2{
+.login h2,
+.register h2,
+.account-setup h2 {
     margin-bottom: 20px;
     text-align: center;
 }
 
-.register h3{
+.register h3 {
     margin-bottom: 10px;
-    
 }
 
-.login input, .register input, .account-setup input, .account-setup select{
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+input,
+select {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #c8d0d8;
     border-radius: 5px;
+    background: #ffffff;
 }
 
-.register label, .account-setup label{
+button {
+    padding: 10px 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.login button,
+.account-setup button {
+    width: calc(50% - 18px);
+    display: inline-block;
+    margin: 8px;
+}
+
+.register button {
+    width: 100%;
+}
+
+.dashboard-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
+    text-align: left;
+    margin-bottom: 0;
+}
+
+.dashboard-header p {
+    color: #5c6670;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.summary div,
+.tracker form,
+.transactions {
+    padding: 18px;
+    border: 1px solid #d8dde3;
+    border-radius: 5px;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
+}
+
+.summary span {
     display: block;
-    margin-bottom: 5px;
-   font: weight 100px;
-}
-.login button, .account-setup button{
-    width:40%;
-    padding: 10px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    display:inline-block;
-    font-size: 16px;
-    margin-right: 15px;
-    margin-left: 15px;
-    
+    margin-bottom: 8px;
+    color: #5c6670;
 }
 
-.register button{
-    width:100%;
-    padding: 10px;
-    background-color: #0056b3;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    display:inline-block;
-    font-size: 16px;
-    
+.summary strong {
+    font-size: 24px;
 }
 
-
-.login button:hover, .register button:hover{
-    background-color: #0056b3;
-    outline: none;
+.tracker {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 16px;
+    align-items: start;
 }
 
-/*dashboard page*/
-.dashboard{
-    display:flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    width:200px;
-    background-color: grey;
+.tracker h2 {
+    margin-bottom: 16px;
 }
 
+.tracker form button {
+    width: 100%;
+}
 
+.transactions ul {
+    list-style: none;
+}
 
+.transaction-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #edf0f2;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.transaction-item.income strong {
+    color: #157347;
+}
+
+.transaction-item.expense strong {
+    color: #b02a37;
+}
+
+.transaction-item button {
+    padding: 6px 10px;
+    background: #dc3545;
+    font-size: 14px;
+}
+
+.transaction-item button:hover {
+    background: #b02a37;
+}
+
+@media (max-width: 760px) {
+    .dashboard-page {
+        padding: 16px;
+    }
+
+    .dashboard-header,
+    .summary,
+    .tracker {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-header {
+        display: grid;
+    }
+
+    .transaction-item {
+        grid-template-columns: 1fr;
+    }
+}

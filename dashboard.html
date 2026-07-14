@@ -2,20 +2,61 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width , initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Dashboard</title>
         <link rel="stylesheet" href="stylesheet.css">
     </head>
 
-    <body>
+    <body data-page="dashboard">
+        <main class="dashboard-page">
+            <header class="dashboard-header">
+                <div>
+                    <p>Welcome back,</p>
+                    <h1 id="dashboard-username">User</h1>
+                </div>
+                <button type="button" id="logoutbtn">Logout</button>
+            </header>
 
-        <main>
-            <div class="dashboard">
-                <div class="one" ></div>
-                <div class="two"></div>
-                <div class="three"></div>
-                <div class="four"></div>
-            </div>
+            <section class="summary">
+                <div>
+                    <span>Income</span>
+                    <strong id="income-total">R0.00</strong>
+                </div>
+                <div>
+                    <span>Expenses</span>
+                    <strong id="expense-total">R0.00</strong>
+                </div>
+                <div>
+                    <span>Balance</span>
+                    <strong id="balance-total">R0.00</strong>
+                </div>
+            </section>
+
+            <section class="tracker">
+                <form id="transaction-form">
+                    <h2>Add Transaction</h2>
+                    <label for="transaction-name">Name</label>
+                    <input id="transaction-name" type="text" placeholder="Salary, groceries, transport" required>
+
+                    <label for="transaction-amount">Amount</label>
+                    <input id="transaction-amount" type="number" min="1" step="0.01" placeholder="0.00" required>
+
+                    <label for="transaction-type">Type</label>
+                    <select id="transaction-type" required>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+
+                    <button type="submit">Add</button>
+                </form>
+
+                <div class="transactions">
+                    <h2>Transactions</h2>
+                    <ul id="transaction-list"></ul>
+                </div>
+            </section>
         </main>
+
+        <script src="script.js"></script>
     </body>
 </html>

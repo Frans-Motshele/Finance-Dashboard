@@ -12,27 +12,27 @@
                 <h2>Account Setup</h2>
                 <form>
                     <label for="username">Username:</label>
-                    <input id="username" type="text" placeholder="Username" required>
+                    <input id="username" type="text" placeholder="Username" minlength="3" required>
                     <label for="password">Password:</label>
-                    <input id="password" type="password" placeholder="Password" required>
+                    <input id="password" type="password" placeholder="Password" minlength="6" required>
                     <label for="confirm-password">Confirm Password:</label>
-                    <input id="confirm-password" type="password" placeholder="Confirm Password" required>
-                    <label for="currency">Preffered Currency</label>
+                    <input id="confirm-password" type="password" placeholder="Confirm Password" minlength="6" required>
+                    <label for="currency">Preferred Currency</label>
                     <select id="currency">
-                        <option>ZAR - South African Rand (R)</option>
-                        <option>USD - US Dollar</option>
-                        <option>EUR - Euro</option>
-                        <option>GBP - British Pound</option>
+                        <option value="ZAR">ZAR - South African Rand (R)</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
                     </select>
 
                     <label for="income-range">Monthly Income range</label>
                     <select id="income-range">
-                        <option value="">Prefer not to say</option>
-                        <option value="">R0 - R4000</option>
-                        <option value="">R4000 - R10000 </option>
-                        <option value="">R10000 - R30000</option>
-                        <option value="">R30000 - R50000</option>
-                        <option value="">R50000+</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
+                        <option value="R0 - R4000">R0 - R4000</option>
+                        <option value="R4000 - R10000">R4000 - R10000</option>
+                        <option value="R10000 - R30000">R10000 - R30000</option>
+                        <option value="R30000 - R50000">R30000 - R50000</option>
+                        <option value="R50000+">R50000+</option>
                     </select>
                     <button type="button" id="backbtn">Back</button>
                     <button type="submit" id="createAccbtn">Create Account</button>
