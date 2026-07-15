@@ -30,11 +30,17 @@
                     <span>Balance</span>
                     <strong id="balance-total">R0.00</strong>
                 </div>
+                <div>
+                    <span>This Month</span>
+                    <strong id="month-total">R0.00</strong>
+                </div>
             </section>
 
             <section class="tracker">
                 <form id="transaction-form">
                     <h2>Add Transaction</h2>
+                    <input id="transaction-id" type="hidden">
+
                     <label for="transaction-name">Name</label>
                     <input id="transaction-name" type="text" placeholder="Salary, groceries, transport" required>
 
@@ -47,12 +53,52 @@
                         <option value="expense">Expense</option>
                     </select>
 
-                    <button type="submit">Add</button>
+                    <label for="transaction-category">Category</label>
+                    <select id="transaction-category" required>
+                        <option value="Salary">Salary</option>
+                        <option value="Business">Business</option>
+                        <option value="Food">Food</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Savings">Savings</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <label for="transaction-date">Date</label>
+                    <input id="transaction-date" type="date" required>
+
+                    <button type="submit" id="save-transaction">Add Transaction</button>
+                    <button type="button" id="cancel-edit" class="secondary-button" hidden>Cancel Edit</button>
                 </form>
 
                 <div class="transactions">
-                    <h2>Transactions</h2>
+                    <div class="transactions-header">
+                        <h2>Transactions</h2>
+                        <button type="button" id="clear-filters" class="secondary-button">Clear Filters</button>
+                    </div>
+
+                    <div class="filters">
+                        <input id="search-transactions" type="search" placeholder="Search transactions">
+                        <select id="filter-type" aria-label="Filter by transaction type">
+                            <option value="all">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                        <select id="filter-category" aria-label="Filter by category">
+                            <option value="all">All Categories</option>
+                            <option value="Salary">Salary</option>
+                            <option value="Business">Business</option>
+                            <option value="Food">Food</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Savings">Savings</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input id="filter-month" type="month" aria-label="Filter by month">
+                    </div>
+
                     <ul id="transaction-list"></ul>
+                    <p id="empty-transactions" class="empty-state">No transactions yet.</p>
                 </div>
             </section>
         </main>

@@ -114,7 +114,7 @@ button:hover {
 
 .summary {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 24px;
 }
@@ -158,6 +158,44 @@ button:hover {
     list-style: none;
 }
 
+.transactions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.transactions-header h2 {
+    margin-bottom: 0;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 1fr 140px 170px 150px;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.secondary-button {
+    background: #eef2f6;
+    color: #18202a;
+}
+
+.secondary-button:hover {
+    background: #dce4ec;
+}
+
+#cancel-edit {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.empty-state {
+    padding: 18px 0;
+    color: #5c6670;
+}
+
 .transaction-item {
     display: grid;
     grid-template-columns: 1fr auto auto;
@@ -171,6 +209,17 @@ button:hover {
     border-bottom: none;
 }
 
+.transaction-info span {
+    display: block;
+    font-weight: 700;
+}
+
+.transaction-info small {
+    display: block;
+    margin-top: 4px;
+    color: #5c6670;
+}
+
 .transaction-item.income strong {
     color: #157347;
 }
@@ -179,13 +228,21 @@ button:hover {
     color: #b02a37;
 }
 
-.transaction-item button {
+.transaction-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.transaction-actions button {
     padding: 6px 10px;
-    background: #dc3545;
     font-size: 14px;
 }
 
-.transaction-item button:hover {
+.transaction-actions button:last-child {
+    background: #dc3545;
+}
+
+.transaction-actions button:last-child:hover {
     background: #b02a37;
 }
 
@@ -196,7 +253,8 @@ button:hover {
 
     .dashboard-header,
     .summary,
-    .tracker {
+    .tracker,
+    .filters {
         grid-template-columns: 1fr;
     }
 
@@ -206,5 +264,11 @@ button:hover {
 
     .transaction-item {
         grid-template-columns: 1fr;
+    }
+
+    .transactions-header,
+    .transaction-actions {
+        align-items: stretch;
+        flex-direction: column;
     }
 }

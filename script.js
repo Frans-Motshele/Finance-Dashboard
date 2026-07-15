@@ -20,14 +20,28 @@ const phoneNo = document.getElementById("phoneNo");
 const dob = document.getElementById("dob");
 
 const transactionForm = document.getElementById("transaction-form");
+const transactionId = document.getElementById("transaction-id");
 const transactionName = document.getElementById("transaction-name");
 const transactionAmount = document.getElementById("transaction-amount");
 const transactionType = document.getElementById("transaction-type");
+const transactionCategory = document.getElementById("transaction-category");
+const transactionDate = document.getElementById("transaction-date");
 const transactionList = document.getElementById("transaction-list");
 const incomeTotal = document.getElementById("income-total");
 const expenseTotal = document.getElementById("expense-total");
 const balanceTotal = document.getElementById("balance-total");
+const monthTotal = document.getElementById("month-total");
 const dashboardUsername = document.getElementById("dashboard-username");
+const saveTransaction = document.getElementById("save-transaction");
+const cancelEdit = document.getElementById("cancel-edit");
+const searchTransactions = document.getElementById("search-transactions");
+const filterType = document.getElementById("filter-type");
+const filterCategory = document.getElementById("filter-category");
+const filterMonth = document.getElementById("filter-month");
+const clearFilters = document.getElementById("clear-filters");
+const emptyTransactions = document.getElementById("empty-transactions");
+
+let transactionsCache = [];
 
 if (registerbtn) {
     registerbtn.addEventListener("click", () => {
@@ -50,47 +64,79 @@ if (backbtn) {
 }
 
 if (createAccbtn) {
-    createAccbtn.form.addEventListener("submit", (event) => {
+    createAccbtn.form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         if (!validateAccount()) {
             return;
         }
 
-        localStorage.setItem("username", username.value.trim());
-        localStorage.setItem("password", password.value);
-        localStorage.setItem("currency", currency.value);
-        localStorage.setItem("incomeRange", incomeRange.value);
-        localStorage.removeItem("loggedIn");
-        window.location.href = "Index.html";
+        const profile = getSavedPersonalInfo();
+
+        if (!profile) {
+            window.alert("Please complete the personal information form first");
+            window.location.href = "register.html";
+            return;
+        }
+
+        try {
+            await apiRequest("/api/register", {
+                method: "POST",
+                body: {
+                    profile,
+                    username: username.value.trim(),
+                    password: password.value,
+                    currency: currency.value,
+                    incomeRange: incomeRange.value
+                }
+            });
+
+            sessionStorage.removeItem("pendingProfile");
+            clearAuth();
+            window.alert("Account created. Please log in.");
+            window.location.href = "Index.html";
+        } catch (error) {
+            window.alert(error.message);
+        }
     });
 }
 
 if (loginbtn) {
-    loginbtn.form.addEventListener("submit", (event) => {
+    loginbtn.form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const savedUsername = localStorage.getItem("username");
-        const savedPassword = localStorage.getItem("password");
+        try {
+            const data = await apiRequest("/api/login", {
+                method: "POST",
+                body: {
+                    username: loginUsername.value.trim(),
+                    password: loginPassword.value
+                }
+            });
 
-        if (loginUsername.value.trim() === savedUsername && loginPassword.value === savedPassword) {
-            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("authToken", data.token);
+            localStorage.setItem("currentUser", JSON.stringify(data.user));
             window.location.href = "dashboard.html";
-        } else {
-            window.alert("Login details are incorrect");
+        } catch (error) {
+            window.alert(error.message);
         }
     });
 }
 
 if (logoutbtn) {
-    logoutbtn.addEventListener("click", () => {
-        localStorage.removeItem("loggedIn");
+    logoutbtn.addEventListener("click", async () => {
+        try {
+            await apiRequest("/api/logout", { method: "POST", auth: true });
+        } catch {
+            // The local session should still be cleared if the server is unavailable.
+        }
+
+        clearAuth();
         window.location.href = "Index.html";
     });
 }
 
 if (document.body.dataset.page === "dashboard") {
-    protectDashboard();
     setupDashboard();
 }
 
@@ -124,56 +170,125 @@ function savePersonalInfo() {
         dob: dob.value
     };
 
-    localStorage.setItem("profile", JSON.stringify(profile));
+    sessionStorage.setItem("pendingProfile", JSON.stringify(profile));
 }
 
-function protectDashboard() {
-    if (localStorage.getItem("loggedIn") !== "true") {
+function getSavedPersonalInfo() {
+    try {
+        return JSON.parse(sessionStorage.getItem("pendingProfile"));
+    } catch {
+        return null;
+    }
+}
+
+async function setupDashboard() {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+        window.location.href = "Index.html";
+        return;
+    }
+
+    try {
+        const data = await apiRequest("/api/me", { auth: true });
+        localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+        if (dashboardUsername) {
+            dashboardUsername.textContent = data.user.username;
+        }
+
+        if (transactionDate) {
+            transactionDate.valueAsDate = new Date();
+        }
+
+        await loadTransactions();
+        bindDashboardEvents();
+    } catch {
+        clearAuth();
         window.location.href = "Index.html";
     }
 }
 
-function setupDashboard() {
-    if (dashboardUsername) {
-        dashboardUsername.textContent = localStorage.getItem("username") || "User";
-    }
-
-    renderTransactions();
-
+function bindDashboardEvents() {
     if (transactionForm) {
-        transactionForm.addEventListener("submit", (event) => {
+        transactionForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            const name = transactionName.value.trim();
-            const amount = Number(transactionAmount.value);
-            const type = transactionType.value;
+            const transaction = readTransactionForm();
 
-            if (!name || amount <= 0) {
-                window.alert("Enter a transaction name and an amount greater than 0");
+            if (!transaction) {
                 return;
             }
 
-            const transactions = getTransactions();
-            transactions.push({
-                id: Date.now(),
-                name,
-                amount,
-                type
-            });
+            try {
+                if (transactionId.value) {
+                    await apiRequest(`/api/transactions/${transactionId.value}`, {
+                        method: "PUT",
+                        auth: true,
+                        body: transaction
+                    });
+                } else {
+                    await apiRequest("/api/transactions", {
+                        method: "POST",
+                        auth: true,
+                        body: transaction
+                    });
+                }
 
-            localStorage.setItem("transactions", JSON.stringify(transactions));
-            transactionForm.reset();
+                resetTransactionForm();
+                await loadTransactions();
+            } catch (error) {
+                window.alert(error.message);
+            }
+        });
+    }
+
+    if (cancelEdit) {
+        cancelEdit.addEventListener("click", resetTransactionForm);
+    }
+
+    [searchTransactions, filterType, filterCategory, filterMonth].forEach((control) => {
+        if (control) {
+            control.addEventListener("input", renderTransactions);
+        }
+    });
+
+    if (clearFilters) {
+        clearFilters.addEventListener("click", () => {
+            searchTransactions.value = "";
+            filterType.value = "all";
+            filterCategory.value = "all";
+            filterMonth.value = "";
             renderTransactions();
         });
     }
 }
 
-function getTransactions() {
-    try {
-        return JSON.parse(localStorage.getItem("transactions")) || [];
-    } catch {
-        return [];
+function readTransactionForm() {
+    const name = transactionName.value.trim();
+    const amount = Number(transactionAmount.value);
+    const type = transactionType.value;
+    const category = transactionCategory.value;
+    const date = transactionDate.value;
+
+    if (!name || amount <= 0 || !category || !date) {
+        window.alert("Enter a name, amount, category, and date");
+        return null;
     }
+
+    return {
+        name,
+        amount,
+        type,
+        category,
+        date
+    };
+}
+
+async function loadTransactions() {
+    const data = await apiRequest("/api/transactions", { auth: true });
+    transactionsCache = data.transactions;
+    renderTransactions();
 }
 
 function renderTransactions() {
@@ -181,9 +296,12 @@ function renderTransactions() {
         return;
     }
 
-    const transactions = getTransactions();
+    const transactions = transactionsCache;
+    const filteredTransactions = filterTransactions(transactions);
     let income = 0;
     let expenses = 0;
+    let currentMonthTotal = 0;
+    const currentMonth = new Date().toISOString().slice(0, 7);
 
     transactionList.innerHTML = "";
 
@@ -194,35 +312,165 @@ function renderTransactions() {
             expenses += transaction.amount;
         }
 
+        if (transaction.date.slice(0, 7) === currentMonth) {
+            currentMonthTotal += transaction.type === "income" ? transaction.amount : -transaction.amount;
+        }
+    });
+
+    filteredTransactions.forEach((transaction) => {
+        const signedAmount = transaction.type === "income"
+            ? formatMoney(transaction.amount)
+            : `-${formatMoney(transaction.amount)}`;
+
         const item = document.createElement("li");
+        const info = document.createElement("div");
         const name = document.createElement("span");
+        const meta = document.createElement("small");
         const amount = document.createElement("strong");
+        const actions = document.createElement("div");
+        const editButton = document.createElement("button");
         const deleteButton = document.createElement("button");
 
         item.className = `transaction-item ${transaction.type}`;
+        info.className = "transaction-info";
         name.textContent = transaction.name;
-        amount.textContent = formatMoney(transaction.amount);
+        meta.textContent = `${transaction.category} - ${formatDisplayDate(transaction.date)}`;
+        amount.textContent = signedAmount;
+        actions.className = "transaction-actions";
+        editButton.type = "button";
+        editButton.textContent = "Edit";
+        editButton.className = "secondary-button";
         deleteButton.type = "button";
         deleteButton.textContent = "Delete";
         deleteButton.setAttribute("aria-label", `Delete ${transaction.name}`);
+
+        editButton.addEventListener("click", () => {
+            editTransaction(transaction);
+        });
 
         deleteButton.addEventListener("click", () => {
             deleteTransaction(transaction.id);
         });
 
-        item.append(name, amount, deleteButton);
+        info.append(name, meta);
+        actions.append(editButton, deleteButton);
+        item.append(info, amount, actions);
         transactionList.appendChild(item);
     });
 
     incomeTotal.textContent = formatMoney(income);
     expenseTotal.textContent = formatMoney(expenses);
     balanceTotal.textContent = formatMoney(income - expenses);
+    monthTotal.textContent = formatMoney(currentMonthTotal);
+    emptyTransactions.textContent = transactions.length ? "No transactions match your filters." : "No transactions yet.";
+    emptyTransactions.hidden = filteredTransactions.length > 0;
 }
 
-function deleteTransaction(id) {
-    const transactions = getTransactions().filter((transaction) => transaction.id !== id);
-    localStorage.setItem("transactions", JSON.stringify(transactions));
-    renderTransactions();
+async function deleteTransaction(id) {
+    const shouldDelete = window.confirm("Delete this transaction?");
+
+    if (!shouldDelete) {
+        return;
+    }
+
+    try {
+        await apiRequest(`/api/transactions/${id}`, {
+            method: "DELETE",
+            auth: true
+        });
+        resetTransactionForm();
+        await loadTransactions();
+    } catch (error) {
+        window.alert(error.message);
+    }
+}
+
+function editTransaction(transaction) {
+    transactionId.value = transaction.id;
+    transactionName.value = transaction.name;
+    transactionAmount.value = transaction.amount;
+    transactionType.value = transaction.type;
+    transactionCategory.value = transaction.category;
+    transactionDate.value = transaction.date;
+    saveTransaction.textContent = "Save Changes";
+    cancelEdit.hidden = false;
+    transactionName.focus();
+}
+
+function resetTransactionForm() {
+    transactionForm.reset();
+    transactionId.value = "";
+    transactionDate.valueAsDate = new Date();
+    saveTransaction.textContent = "Add Transaction";
+    cancelEdit.hidden = true;
+}
+
+function filterTransactions(transactions) {
+    const searchTerm = searchTransactions.value.trim().toLowerCase();
+    const type = filterType.value;
+    const category = filterCategory.value;
+    const month = filterMonth.value;
+
+    return transactions.filter((transaction) => {
+        const matchesSearch = transaction.name.toLowerCase().includes(searchTerm);
+        const matchesType = type === "all" || transaction.type === type;
+        const matchesCategory = category === "all" || transaction.category === category;
+        const matchesMonth = !month || transaction.date.slice(0, 7) === month;
+
+        return matchesSearch && matchesType && matchesCategory && matchesMonth;
+    });
+}
+
+async function apiRequest(path, options = {}) {
+    const headers = {
+        "Content-Type": "application/json"
+    };
+
+    if (options.auth) {
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+            throw new Error("You are not logged in");
+        }
+
+        headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(path, {
+        method: options.method || "GET",
+        headers,
+        body: options.body ? JSON.stringify(options.body) : undefined
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(data.error || "Request failed");
+    }
+
+    return data;
+}
+
+function clearAuth() {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
+}
+
+function getCurrentUser() {
+    try {
+        return JSON.parse(localStorage.getItem("currentUser"));
+    } catch {
+        return null;
+    }
+}
+
+function formatDisplayDate(dateValue) {
+    const date = new Date(`${dateValue}T00:00:00`);
+    return date.toLocaleDateString("en-ZA", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+    });
 }
 
 function formatMoney(amount) {
@@ -232,7 +480,10 @@ function formatMoney(amount) {
         EUR: "EUR ",
         GBP: "GBP "
     };
-    const savedCurrency = localStorage.getItem("currency") || "ZAR";
+    const currentUser = getCurrentUser();
+    const savedCurrency = currentUser?.currency || "ZAR";
+    const sign = amount < 0 ? "-" : "";
+    const positiveAmount = Math.abs(amount);
 
-    return `${symbols[savedCurrency] || "R"}${amount.toFixed(2)}`;
+    return `${sign}${symbols[savedCurrency] || "R"}${positiveAmount.toFixed(2)}`;
 }
